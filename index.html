@@ -764,7 +764,7 @@
 
     <div class="tags">
         <span class="tag">DGX OS</span><span class="tag">Ubuntu ARM64</span>
-        <span class="tag">JetPack-style</span><span class="tag">CUDA 12.5</span>
+        <span class="tag">JetPack-style</span><span class="tag">CUDA 13.0</span>
         <span class="tag">NGC</span><span class="tag">Docker</span>
         <span class="tag">Wi-Fi 7</span><span class="tag">SSH</span>
         <span class="tag">200 GbE</span><span class="tag">vLLM</span>
@@ -813,7 +813,7 @@
         <div class="diagram-panel accent-border">
             <h4>Standard contents</h4>
             <ul>
-                <li>1&times; DGX Spark unit (~1.4 kg)</li>
+                <li>1&times; DGX Spark unit (~1.2 kg)</li>
                 <li>1&times; 240 W power adapter (USB-C PD on most SKUs)</li>
                 <li>1&times; AC cord (region-specific)</li>
                 <li>1&times; quick-start card</li>
@@ -825,7 +825,7 @@
             <ul>
                 <li><strong>No HDMI / DP cable</strong> &mdash; bring your own</li>
                 <li><strong>No keyboard / mouse</strong> &mdash; USB or Bluetooth</li>
-                <li><strong>No QSFP28 cable</strong> &mdash; needed only if you're pairing two Sparks (DAC ~$80, AOC ~$150)</li>
+                <li><strong>No QSFP cable</strong> &mdash; needed only if you're pairing two Sparks (DAC ~$80, AOC ~$150)</li>
                 <li>No printed manual; everything's online at docs.nvidia.com</li>
             </ul>
         </div>
@@ -833,7 +833,7 @@
 
     <div class="callout">
         <div class="callout-label">Workspace pre-flight</div>
-        <p>Before powering on: have a monitor + cable ready, a Wi-Fi network credential ready (or a wired 1 GbE cable for the management port), and an NVIDIA Developer account. Without an NVIDIA Developer account you can't pull NGC images, which is most of the value of the device.</p>
+        <p>Before powering on: have a monitor + cable ready, a Wi-Fi network credential ready (or a wired Ethernet cable for the 10 GbE RJ-45 port), and an NVIDIA Developer account. Without an NVIDIA Developer account you can't pull NGC images, which is most of the value of the device.</p>
     </div>
 </section>
 
@@ -843,7 +843,7 @@
     <p>Press the power button on the front. NVIDIA logo, ~30 seconds, then the OOBE wizard:</p>
     <ol>
         <li><strong>Language &amp; keyboard</strong>.</li>
-        <li><strong>Wi-Fi or wired connection</strong>. Wi-Fi 7 is mostly painless on launch firmware; wired 1 GbE on the management port is more reliable for headless.</li>
+        <li><strong>Wi-Fi or wired connection</strong>. Wi-Fi 7 is mostly painless on launch firmware; wired 10 GbE on the RJ-45 port is more reliable for headless.</li>
         <li><strong>Time zone</strong>.</li>
         <li><strong>Create user</strong>. You'll be the first sudoer; pick a strong password &mdash; the box exposes SSH by default if joined to a network.</li>
         <li><strong>EULA acceptance</strong> for DGX OS and the bundled NVIDIA AI Enterprise components.</li>
@@ -855,7 +855,7 @@
 <section class="slide" id="slide-03">
     <div class="slide-number">03</div>
     <h2>DGX OS &mdash; What It Is</h2>
-    <p>DGX OS is <strong>Ubuntu 22.04 LTS for ARM64</strong> with NVIDIA's stack pre-installed and pinned: CUDA 12.5+, NVIDIA driver 560+, the NVIDIA Container Toolkit, DGX-validated kernel, NCCL, and a pre-configured docker-engine. Same DGX OS family as you'd find on a DGX H100 / B200; the apt repository is shared.</p>
+    <p>DGX OS is <strong>Ubuntu 24.04 LTS for ARM64</strong> with NVIDIA's stack pre-installed and pinned: CUDA 13.0, NVIDIA driver 580, the NVIDIA Container Toolkit, DGX-validated kernel, NCCL, and a pre-configured docker-engine. Same DGX OS family as you'd find on a DGX H100 / B200; the apt repository is shared.</p>
 
     <ul>
         <li><strong>Init system</strong>: systemd</li>
@@ -863,7 +863,7 @@
         <li><strong>Default user shell</strong>: bash with NVIDIA-flavoured PS1; <code>~/.bashrc</code> sources <code>/etc/profile.d/nvidia.sh</code></li>
         <li><strong>GPU driver</strong>: pinned to a Production Branch (PB) release; do not <code>apt upgrade</code> it casually</li>
         <li><strong>Kernel</strong>: 6.x with NVIDIA &quot;dgx-kernel&quot; signed flavour</li>
-        <li><strong>Pre-installed packages</strong>: <code>cuda-toolkit-12-5</code>, <code>nvidia-container-toolkit</code>, <code>docker.io</code>, <code>nvidia-fabricmanager</code>, <code>nvidia-dgxconfig</code>, <code>htop</code>, <code>iperf3</code>, <code>git</code>, <code>vim</code>, <code>tmux</code>, <code>nvtop</code></li>
+        <li><strong>Pre-installed packages</strong>: <code>cuda-toolkit-13-0</code>, <code>nvidia-container-toolkit</code>, <code>docker.io</code>, <code>nvidia-fabricmanager</code>, <code>nvidia-dgxconfig</code>, <code>htop</code>, <code>iperf3</code>, <code>git</code>, <code>vim</code>, <code>tmux</code>, <code>nvtop</code></li>
     </ul>
 
     <p>What's <em>not</em> installed: PyTorch, TensorFlow, JupyterHub, vLLM. Those come in via <strong>NGC containers</strong> &mdash; Spark expects you to live in containers, not on the host.</p>
@@ -877,11 +877,11 @@
     <div class="code-block">
         <div class="code-header">verify the stack</div>
         <pre><code>nvidia-smi                                 <span class="cm"># shows GB10 GPU + 128 GB unified</span>
-nvcc --version                             <span class="cm"># CUDA 12.5+</span>
+nvcc --version                             <span class="cm"># CUDA 13.0</span>
 docker info | grep -i runtime              <span class="cm"># nvidia runtime present</span>
 sudo nvidia-ctk runtime configure --runtime=docker
 sudo systemctl restart docker
-docker run --rm --gpus all <span class="str">nvcr.io/nvidia/cuda:12.5.1-base-ubuntu22.04</span> nvidia-smi</code></pre>
+docker run --rm --gpus all <span class="str">nvcr.io/nvidia/cuda:13.0.1-base-ubuntu24.04</span> nvidia-smi</code></pre>
     </div>
 
     <p>The last line should reproduce the same <code>nvidia-smi</code> output from inside a container &mdash; that's the &quot;everything works&quot; smoke test. If <code>nvidia-smi</code> inside the container fails, recheck <code>nvidia-ctk</code> output in <code>/etc/docker/daemon.json</code>.</p>
@@ -934,8 +934,8 @@ WantedBy=multi-user.target</code></pre>
     <h2>Networking &mdash; Wi-Fi 7 vs 200 GbE</h2>
     <ul>
         <li><strong>Wi-Fi 7 (802.11be)</strong>: 6 GHz radio, 320 MHz channels, real-world ~3 Gb/s to a modern router. Fine for control-plane SSH and pulling models from NGC.</li>
-        <li><strong>1 GbE management port</strong>: out-of-band style; used for BMC-equivalent and headless first-boot. Keep this on your trusted LAN.</li>
-        <li><strong>200 GbE QSFP28 ConnectX-7</strong>: only used for two-Spark pairing or attaching to an InfiniBand / Ethernet fabric. Default state at boot is <em>down</em> &mdash; bring it up explicitly:</li>
+        <li><strong>10 GbE RJ-45 port</strong>: out-of-band style; used for BMC-equivalent and headless first-boot. Keep this on your trusted LAN.</li>
+        <li><strong>200 GbE ConnectX-7 (2&times; QSFP)</strong>: only used for two-Spark pairing or attaching to an InfiniBand / Ethernet fabric. Default state at boot is <em>down</em> &mdash; bring it up explicitly:</li>
     </ul>
 
     <div class="code-block">
